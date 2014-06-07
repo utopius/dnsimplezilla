@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Domain>the domain name</Domain>
+  <DomainToken>the domain api token</DomainToken>
+  <RecordId>the id of the record to update with the current public ip</RecordId>
+  <UpdateIntervalInMinutes>15</UpdateIntervalInMinutes>
+</Configuration>
