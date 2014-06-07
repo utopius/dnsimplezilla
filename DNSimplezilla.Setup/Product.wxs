@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?define ProductName = "DNSimple.UpdateService" ?>
+  <?define ProductName = "DNSimplezilla" ?>
   <?define ProductAuthor = "Florian Herbel" ?>
   <?define ProductAppFolder = "InstallLocation" ?>
 
@@ -43,7 +43,7 @@
       </Directory>
     </Directory>
 
-    <Feature Id="Complete" Title="DNSimple.UpdateService" Description="The complete package."
+    <Feature Id="Complete" Title="$(var.ProductName)" Description="The complete package."
         Display="expand" Level="1" ConfigurableDirectory="INSTALLLOCATION">
       <Feature Id="DNSimple.UpdateService" Title="DNSimple.UpdateService" Level="1">
         <ComponentGroupRef Id="Dependencies" />
@@ -54,15 +54,15 @@
     </Feature>
 
     <Component Id="Component.DNSimple.UpdateService" Directory="INSTALLLOCATION" Guid="{F6C696ED-BC0A-42BF-A8FA-1625F0C9758A}" Win64="$(var.Win64)">
-      <File Id="ServiceEXE" Source="$(var.DNSimple.UpdateService.TargetPath)" />
-      <File Source="$(var.DNSimple.UpdateService.TargetPath).config" />
+      <File Id="ServiceEXE" Source="$(var.DNSimplezilla.TargetPath)" />
+      <File Source="$(var.DNSimplezilla.TargetPath).config" />
       <File Source="..\Build\$(var.Configuration)\Topshelf.dll" />
       <!-- To set the service command line arguments use the attribute Arguments=" /arg value"-->
       <ServiceInstall Id="ServiceInstaller" Type="ownProcess"
-                      Name="DNSimpleUpdateService" DisplayName="DNSimple.UpdateService" Description="Updates DNSimple Records"
+                      Name="$(var.ProductName)" DisplayName="$(var.ProductName).UpdateService" Description="Updates DNSimple Records"
                       Start="auto" Account="LocalSystem" ErrorControl="normal" Vital="yes"
                         />
-      <ServiceControl Id="StartService" Name="DNSimpleUpdateService" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+      <ServiceControl Id="StartService" Name="$(var.ProductName)" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
     </Component>
 
     <ComponentGroup Id="Dependencies" Directory="INSTALLLOCATION">

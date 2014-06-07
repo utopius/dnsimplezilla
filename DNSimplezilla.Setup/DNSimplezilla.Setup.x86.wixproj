@@ -4,8 +4,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <PlatformTarget>x86</PlatformTarget>
-    <ProjectGuid>{afdd3f01-deeb-4f39-86f7-3623837d8234}</ProjectGuid>
-    <OutputName>DNSimple.UpdateService.Setup</OutputName>
+    <ProjectGuid>{2675bccc-f3c4-48d0-85cb-442cd61c2e85}</ProjectGuid>
+    <OutputName>DNSimplezilla.Setup</OutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>..\Build\$(Configuration)\</OutputPath>
@@ -17,5 +17,5 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>ApplicationVersion=$(Version)</DefineConstants>
   </PropertyGroup>
-  <Import Project="DNSimple.UpdateService.Setup.wixproj" />
+  <Import Project="DNSimplezilla.Setup.wixproj" />
 </Project>

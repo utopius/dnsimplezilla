@@ -2,3 +2,5 @@ Build/
 DNSimple.UpdateService.Setup/obj/
 DNSimple.UpdateService/obj/
 packages/
+DNSimplezilla.Setup/obj/
+DNSimplezilla/obj/
