@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductName = "DNSimple.UpdateService" ?>
+  <?define ProductAuthor = "Florian Herbel" ?>
+  <?define ProductAppFolder = "InstallLocation" ?>
+
+  <?if $(var.Platform) = x64 ?>
+  <?define PlatformName="x64" ?>
+  <!--<?define ProductId = "299555FD-F4B9-4CCB-A9BD-D5BC7CC3D4F1" ?>-->
+  <?define ProductUpgradeCode = "FB2FB4F9-F185-481F-907D-C2CD1FEDB493" ?>
+  <?define Win64 = "yes" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?define PlatformNETFRAMEWORK40CLIENTINSTALLROOTDIR = "NETFRAMEWORK40CLIENTINSTALLROOTDIR64" ?>
+  <?define PlatformNETFRAMEWORK40FULLINSTALLROOTDIR = "NETFRAMEWORK40FULLINSTALLROOTDIR64" ?>
+  <?else ?>
+  <?define PlatformName="x86" ?>
+  <!--<?define ProductId = "7682F09D-F385-4DEC-B0A5-716E705894A9" ?>-->
+  <?define ProductUpgradeCode = "7A1A4C1C-294F-4FAB-832B-FC0938A57AC8" ?>
+  <?define Win64 = "no" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?define PlatformNETFRAMEWORK40CLIENTINSTALLROOTDIR = "NETFRAMEWORK40CLIENTINSTALLROOTDIR" ?>
+  <?define PlatformNETFRAMEWORK40FULLINSTALLROOTDIR = "NETFRAMEWORK40FULLINSTALLROOTDIR" ?>
+  <?endif ?>
+
+  <Product Id="*" Version="!(bind.FileVersion.ServiceEXE)" UpgradeCode="$(var.ProductUpgradeCode)" Language="1033"
+           Name="$(var.ProductName) !(bind.FileVersion.ServiceEXE) ($(var.PlatformName))" Manufacturer="$(var.ProductAuthor)">
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"
+             Manufacturer="$(var.ProductAuthor)" InstallPrivileges="elevated"/>
+    <Icon Id="ProductIcon.exe" SourceFile="Icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon.exe" />
+    <Property Id="INSTALLLOCATION">
+      <RegistrySearch Id="RegistrySearch" Type="raw" Root="HKLM" Win64="$(var.Win64)"
+                Key="Software\$(var.ProductName)$(var.PlatformName)" Name="InstallLocation" />
+    </Property>
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed. Setup will now exit." AllowSameVersionUpgrades="yes" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="INSTALLLOCATION" Name="$(var.ProductName)">
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Title="DNSimple.UpdateService" Description="The complete package."
+        Display="expand" Level="1" ConfigurableDirectory="INSTALLLOCATION">
+      <Feature Id="DNSimple.UpdateService" Title="DNSimple.UpdateService" Level="1">
+        <ComponentGroupRef Id="Dependencies" />
+        <ComponentRef Id="CreateEventSourceFullNet4"/>
+        <ComponentRef Id="CreateEventSourceClientNet4"/>
+        <ComponentRef Id="Component.DNSimple.UpdateService"/>
+      </Feature>
+    </Feature>
+
+    <Component Id="Component.DNSimple.UpdateService" Directory="INSTALLLOCATION" Guid="{F6C696ED-BC0A-42BF-A8FA-1625F0C9758A}" Win64="$(var.Win64)">
+      <File Id="ServiceEXE" Source="$(var.DNSimple.UpdateService.TargetPath)" />
+      <File Source="$(var.DNSimple.UpdateService.TargetPath).config" />
+      <File Source="..\Build\$(var.Configuration)\Topshelf.dll" />
+      <!-- To set the service command line arguments use the attribute Arguments=" /arg value"-->
+      <ServiceInstall Id="ServiceInstaller" Type="ownProcess"
+                      Name="DNSimpleUpdateService" DisplayName="DNSimple.UpdateService" Description="Updates DNSimple Records"
+                      Start="auto" Account="LocalSystem" ErrorControl="normal" Vital="yes"
+                        />
+      <ServiceControl Id="StartService" Name="DNSimpleUpdateService" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+    </Component>
+
+    <ComponentGroup Id="Dependencies" Directory="INSTALLLOCATION">
+      <Component Id="Dependencies.External" Guid="{1A541319-C022-4CEF-B67F-F20FE9E29B12}" Win64="$(var.Win64)">
+        <File Source="..\Build\$(var.Configuration)\Newtonsoft.Json.dll" />
+        <File Source="..\Build\$(var.Configuration)\RestSharp.dll" />
+        <File Source="..\Build\$(var.Configuration)\log4net.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Event Source creation with .NET 4 Full -->
+    <Component Id="CreateEventSourceFullNet4" Guid="{F0332429-7117-4869-9A48-98BBDD063FC0}" Directory="INSTALLLOCATION">
+      <Condition><![CDATA[PlatformNETFRAMEWORK40FULLINSTALLROOTDIR]]></Condition>
+      <CreateFolder/>
+      <!-- Create an Event Source -->
+      <Util:EventSource
+            xmlns:Util="http://schemas.microsoft.com/wix/UtilExtension"
+            Name="$(var.ProductName)"
+            Log="Application"
+            EventMessageFile="[PlatformNETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>
+    </Component>
+
+    <!-- Event Source creation with .NET 4 Client Profile -->
+    <Component Id="CreateEventSourceClientNet4" Guid="{CAC86A74-60FC-4036-9F5B-2B3D2C3FB0F2}" Directory="INSTALLLOCATION">
+      <Condition><![CDATA[PlatformNETFRAMEWORK40CLIENTINSTALLROOTDIR]]></Condition>
+      <CreateFolder/>
+      <!-- Create an Event Source -->
+      <Util:EventSource
+            xmlns:Util="http://schemas.microsoft.com/wix/UtilExtension"
+            Name="$(var.ProductName)"
+            Log="Application"
+            EventMessageFile="[PlatformNETFRAMEWORK40CLIENTINSTALLROOTDIR]EventLogMessages.dll"/>
+    </Component>
+    
+    <!-- TODO: Make use of the WIX Ui dialog sets -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+    <UIRef Id="WixUI_FeatureTree" />
+  </Product>
+</Wix>

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <PlatformTarget>x64</PlatformTarget>
+    <Version Condition=" '$(Version)' == '' ">1.0.0.0</Version>
+    <ProductVersion>3.7</ProductVersion>
+    <ProjectGuid>{a41f9337-6d28-41d1-a513-afcb00463a07}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>DNSimple.UpdateService.Setup.$(Platform)</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>..\Build\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;ApplicationVersion=$(Version)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>..\Build\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>ApplicationVersion=$(Version)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DNSimple.UpdateService\DNSimple.UpdateService.csproj">
+      <Name>DNSimple.UpdateService</Name>
+      <Project>{41F74D16-3C9A-4709-A73F-1CFBE1B3A44B}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.ico" />
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets. -->
+  <Target Name="BeforeBuild">
+    <Message Text="Building Platform $(Platform)..." />
+  </Target>
+  <!--<Target Name="AfterBuild">
+    <MSBuild Projects="Popzilla.Setup.x86.wixproj" RunEachTargetSeparately="true" 
+             ContinueOnError="false"/>
+  </Target> -->
+  <Target Name="AfterBuild">
+    <Message Text="AfterBuild: Building Platform $(Platform)..." />
+    <PropertyGroup>
+      <_ProjectToBuild>$(ProjectToBuild)</_ProjectToBuild>
+      <_PlatformToBuild>$(PlatformToBuild)</_PlatformToBuild>
+    </PropertyGroup>
+    <MSBuild Projects="$(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=$(_Configuration);Platform=$(_PlatformToBuild)" ContinueOnError="false" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent />
+  </PropertyGroup>
+</Project>
