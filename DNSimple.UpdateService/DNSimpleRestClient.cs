@@ -41,14 +41,20 @@ namespace DNSimple.UpdateService
 
             var response = Execute(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                return JsonConvert.DeserializeObject(response.Content);
-            }
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw new DnSimpleException(
+                    string.Format("Error fetching record {0}. StatusCode: {1}, StatusDescription: {2}", recordId,
+                        response.StatusCode, response.StatusDescription));
 
-            throw new DnSimpleException(
-                string.Format("Error fetching record {0}. StatusCode: {1}, StatusDescription: {2}", recordId,
-                    response.StatusCode, response.StatusDescription));
+            dynamic jsonObject = JsonConvert.DeserializeObject(response.Content);
+            if(jsonObject == null)
+                throw new DnSimpleException("Deserialized jsonObject is null, response: " + response);
+
+            var record = jsonObject.record;
+            if (record == null)
+                throw new DnSimpleException("jsonObject.record is null, json: " + jsonObject);
+
+            return record;
         }
 
         public dynamic UpdateRecord(int recordId, string ip)
