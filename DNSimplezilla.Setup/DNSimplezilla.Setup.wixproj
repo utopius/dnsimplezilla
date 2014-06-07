@@ -49,7 +49,7 @@
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DNSimple.UpdateService\DNSimplezilla.csproj">
+    <ProjectReference Include="..\DNSimplezilla\DNSimplezilla.csproj">
       <Name>DNSimplezilla</Name>
       <Project>{1decee3c-320f-4837-bb0f-484664575b54}</Project>
       <Private>True</Private>
