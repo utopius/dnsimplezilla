@@ -88,7 +88,7 @@
     <Compile Include="ConfigurationProvider.cs" />
     <Compile Include="DnSimpleUpdateService.cs" />
     <Compile Include="DNSimpleRestClient.cs" />
-    <Compile Include="EventIds.cs" />
+    <Compile Include="EventId.cs" />
     <Compile Include="EventLog.cs" />
     <Compile Include="JsonIpRestClient.cs" />
     <Compile Include="Program.cs" />
