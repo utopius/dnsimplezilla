@@ -40,29 +40,25 @@ namespace DNSimple.UpdateService
 
         private void UpdateDns()
         {
-            string ip = _jsonip.FetchIp();
-            if (string.IsNullOrEmpty(ip))
+            string publicIp = _jsonip.FetchIp();
+            if (string.IsNullOrEmpty(publicIp))
             {
-                EventLog.Warn(string.Format("Whoops, ip response is strange: {0}", ip));
+                EventLog.Warn(string.Format("Whoops, ip response is strange: {0}", publicIp));
                 return;
             }
 
             var record = _dnSimple.FetchRecord(_configuration.RecordId);
-            if (record == null)
+
+            string recordContent = record.content;
+            if (publicIp == recordContent)
             {
-                EventLog.Warn(string.Format("Whoops, record is null."));
+                EventLog.Info(string.Format("Record '{0}' still points to IP address '{1}', no need to update.", record, publicIp), EventId.RecordUpdateNotNecessary);
                 return;
             }
 
-            if (ip == record.content)
-            {
-                EventLog.Info(string.Format("Record '{0}' still points to IP address '{1}', no need to update.", record, ip));
-                return;
-            }
-
-            EventLog.Info(string.Format("Current public IP Address is '{0}' (Obtained from http://jsonip.com)", ip));
-            _dnSimple.UpdateRecord(_configuration.RecordId, ip);
-            EventLog.Info(string.Format("Successfully updated record '{0}' to point to IP address '{1}'.", record, ip));
+            EventLog.Info(string.Format("Current public IP Address is '{0}' (Obtained from http://jsonip.com)", publicIp));
+            _dnSimple.UpdateRecord(_configuration.RecordId, publicIp);
+            EventLog.Info(string.Format("Successfully updated record '{0}' to point to IP address '{1}'.", record, publicIp), EventId.RecordUpdated);
         }
 
         public void Stop()
