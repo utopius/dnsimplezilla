@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNSimple.UpdateService", "DNSimple.UpdateService\DNSimple.UpdateService.csproj", "{1DECEE3C-320F-4837-BB0F-484664575B54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNSimplezilla", "DNSimple.UpdateService\DNSimplezilla.csproj", "{1DECEE3C-320F-4837-BB0F-484664575B54}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DNSimple.UpdateService.Setup", "DNSimple.UpdateService.Setup\DNSimple.UpdateService.Setup.wixproj", "{A41F9337-6D28-41D1-A513-AFCB00463A07}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DNSimplezilla.Setup", "DNSimple.UpdateService.Setup\DNSimplezilla.Setup.wixproj", "{A41F9337-6D28-41D1-A513-AFCB00463A07}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DNSimple.UpdateService.Setup.x86", "DNSimple.UpdateService.Setup\DNSimple.UpdateService.Setup.x86.wixproj", "{AFDD3F01-DEEB-4F39-86F7-3623837D8234}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DNSimplezilla.Setup.x86", "DNSimple.UpdateService.Setup\DNSimplezilla.Setup.x86.wixproj", "{AFDD3F01-DEEB-4F39-86F7-3623837D8234}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
