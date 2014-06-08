@@ -59,10 +59,10 @@
       <File Source="..\Build\$(var.Configuration)\Topshelf.dll" />
       <!-- To set the service command line arguments use the attribute Arguments=" /arg value"-->
       <ServiceInstall Id="ServiceInstaller" Type="ownProcess"
-                      Name="$(var.ProductName)" DisplayName="$(var.ProductName).UpdateService" Description="Updates DNSimple Records"
+                      Name="DNSimplezilla" DisplayName="DNSimplezilla" Description="Updates DNSimple Records"
                       Start="auto" Account="LocalSystem" ErrorControl="normal" Vital="yes"
                         />
-      <ServiceControl Id="StartService" Name="$(var.ProductName)" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+      <ServiceControl Id="StartService" Name="DNSimplezilla" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
     </Component>
 
     <ComponentGroup Id="Dependencies" Directory="INSTALLLOCATION">

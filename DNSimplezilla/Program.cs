@@ -14,30 +14,32 @@ namespace DNSimple.UpdateService
                     {
                         s.ConstructUsing(hostSettings =>
                         {
+                            EventLog.Info("DNSimplezilla preparing for start...");
+
                             var configProvider = ConfigurationProvider.Load();
                             return new DnSimpleUpdateService(configProvider.Configuration);
                         });
                         s.WhenStarted((service, host) =>
                             {
-                                EventLog.Info("DNSimpleUpdateService starting...");
+                                EventLog.Info("DNSimplezilla starting...");
 
                                 service.Start();
 
-                                EventLog.Info("DNSimpleUpdateService started.");
+                                EventLog.Info("DNSimplezilla started.");
                                 return true;
                             });
                         s.WhenStopped((service, host) =>
                             {
-                                EventLog.Info("DNSimpleUpdateService stopping...");
+                                EventLog.Info("DNSimplezilla stopping...");
 
                                 service.Stop();
 
-                                EventLog.Info("DNSimpleUpdateService stopped.");
+                                EventLog.Info("DNSimplezilla stopped.");
                                 return true;
                             });
                     });
-                    x.SetServiceName("DNSimpleUpdateService");
-                    x.SetDisplayName("DNSimple.UpdateService");
+                    x.SetServiceName("DNSimplezilla");
+                    x.SetDisplayName("DNSimplezilla");
                     x.SetDescription("Updates DNSimple Records");
                     x.DependsOnEventLog();
                     x.RunAsLocalSystem();
