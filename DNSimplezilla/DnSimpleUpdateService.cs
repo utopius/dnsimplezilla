@@ -40,14 +40,15 @@ namespace DNSimple.UpdateService
 
         private void UpdateDns()
         {
+            //Fetch the record first to be sure the configuration allows access to the DNSimple api before doing other network stuff.
+            var record = _dnSimple.FetchRecord(_configuration.RecordId);
+            
             string publicIp = _jsonip.FetchIp();
             if (string.IsNullOrEmpty(publicIp))
             {
                 EventLog.Warn(string.Format("Whoops, ip response is strange: {0}", publicIp));
                 return;
             }
-
-            var record = _dnSimple.FetchRecord(_configuration.RecordId);
 
             string recordContent = record.content;
             if (publicIp == recordContent)
