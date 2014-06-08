@@ -8,8 +8,8 @@
     <ProjectGuid>{1DECEE3C-320F-4837-BB0F-484664575B54}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DNSimple.UpdateService</RootNamespace>
-    <AssemblyName>DNSimple.UpdateService</AssemblyName>
+    <RootNamespace>DNSimplezilla</RootNamespace>
+    <AssemblyName>DNSimplezilla</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
