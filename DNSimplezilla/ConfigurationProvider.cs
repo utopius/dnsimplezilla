@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,20 +13,11 @@ namespace DNSimple.UpdateService
     /// </summary>
     public class ConfigurationProvider
     {
-        private static readonly string ConfigurationFilePath;
+        private const string ConfigFilename = "config.xml";
+        private static FileInfo _defaultConfigFile;
+        private static FileInfo _configFile;
 
-        static ConfigurationProvider()
-        {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-
-            string programDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), fileVersionInfo.ProductName);
-            string configurationFile = string.Format("{0}.xml", fileVersionInfo.ProductName);
-            if (!Directory.Exists(programDataPath))
-            {
-                Directory.CreateDirectory(programDataPath);
-            }
-            ConfigurationFilePath = Path.Combine(programDataPath, configurationFile);
-        }
+        public Configuration Configuration { get; private set; }
 
         private ConfigurationProvider(Configuration configuration)
         {
@@ -34,34 +26,59 @@ namespace DNSimple.UpdateService
 
         public static ConfigurationProvider Load()
         {
-            var configuration = LoadConfiguration(ConfigurationFilePath);
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+
+            string programDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), fileVersionInfo.ProductName);
+            if (!Directory.Exists(programDataPath))
+            {
+                Directory.CreateDirectory(programDataPath);
+            }
+
+            var executableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _defaultConfigFile = new FileInfo(Path.Combine(executableDirectory, ConfigFilename));
+            _configFile = new FileInfo(Path.Combine(programDataPath, ConfigFilename));
+
+            if (!_configFile.Exists)
+            {
+                var message =
+                    string.Format(
+                        "No configuration file found, the default configuration file was created: {0}. You have to add sane values to the file before starting the service.",
+                        _configFile.FullName);
+                EventLog.Warn(message);
+                _defaultConfigFile.CopyTo(_configFile.FullName);
+                throw new ServiceConfigurationException(message);
+            }
+            
+            if (File.ReadAllLines(_defaultConfigFile.FullName)
+                .SequenceEqual(File.ReadAllLines(_configFile.FullName)))
+            {
+                var message =
+                    string.Format(
+                        "The configuration file '{0}' contains default values. You have to add sane values to the file before starting the service.",
+                        _configFile.FullName);
+                EventLog.Warn(message);
+                throw new ServiceConfigurationException(message);
+            }
+            var configuration = LoadConfiguration();
 
             return new ConfigurationProvider(configuration);
         }
 
-        private static Configuration LoadConfiguration(string path)
+        private static Configuration LoadConfiguration()
         {
-            EventLog.Info(string.Format("Loading configuration from {0}...", ConfigurationFilePath));
-
-            var configuration = new Configuration { Domain = "domain", DomainToken = "domainToken", UpdateIntervalInMinutes = 15, RecordId = 0 };
-
-            if (!File.Exists(path))
-            {
-                EventLog.Warn(string.Format("No configuration file found. A blank configuration file was created: {0}", ConfigurationFilePath));
-                Save(configuration);
-                throw new Exception(string.Format("No configuration file found. A blank configuration file was created: {0}", ConfigurationFilePath));
-            }
+            EventLog.Info(string.Format("Loading configuration from {0}...", _configFile.FullName));
 
             try
             {
-                using (var configurationFileStream = new FileStream(path, FileMode.Open))
+                using (var configurationFileStream = _configFile.OpenRead())
                 {
                     var serializer = XmlSerializer.FromTypes(new[] { typeof(Configuration) }).
                                                    First();
 
-                    configuration = (Configuration)serializer.Deserialize(configurationFileStream) ??
-                                    new Configuration();
-                    EventLog.Info(string.Format("Configuration loaded from {0}.", ConfigurationFilePath));
+                    var configuration = (Configuration)serializer.Deserialize(configurationFileStream);
+
+                    EventLog.Info(string.Format("Configuration loaded from {0}.", _configFile.FullName));
+                    return configuration;
                 }
             }
             catch (Exception e)
@@ -69,7 +86,6 @@ namespace DNSimple.UpdateService
                 EventLog.Error("Configuration data corrupted and cannot be restored.", e);
                 throw;
             }
-            return configuration;
         }
 
         public void Save()
@@ -79,14 +95,14 @@ namespace DNSimple.UpdateService
 
         private static void Save(Configuration configuration)
         {
-            EventLog.Info(string.Format("Saving Configuration to '{0}'...", ConfigurationFilePath));
+            EventLog.Info(string.Format("Saving Configuration to '{0}'...", _configFile.FullName));
             try
             {
-                using (var fileStream = new FileStream(ConfigurationFilePath, FileMode.Create))
+                using (var fileStream = _configFile.OpenWrite())
                 {
                     var serializer = new XmlSerializer(typeof(Configuration));
                     serializer.Serialize(fileStream, configuration);
-                    EventLog.Info(string.Format("Configuration saved to {0}.", ConfigurationFilePath));
+                    EventLog.Info(string.Format("Configuration saved to {0}.", _configFile.FullName));
                 }
             }
             catch (Exception e)
@@ -94,7 +110,13 @@ namespace DNSimple.UpdateService
                 EventLog.Error("Error saving Configuration! File may be corrupted!", e);
             }
         }
+    }
 
-        public Configuration Configuration { get; private set; }
+    public class ServiceConfigurationException : Exception
+    {
+        public ServiceConfigurationException(string message)
+            : base(message)
+        {
+        }
     }
 }
