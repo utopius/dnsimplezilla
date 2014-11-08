@@ -81,6 +81,9 @@
       <Component Guid="{673EC01A-964A-4C6E-A831-9DCB0820B17D}" Win64="$(var.Win64)">
         <File Source="$(var.BuildPath)log4net.dll" KeyPath="yes" />
       </Component>
+        <Component Guid="{A3D1C7EC-D693-4BE6-9CB9-06A4A8782701}" Win64="$(var.Win64)">
+            <File Source="$(var.BuildPath)DNSimple.Api.dll" KeyPath="yes" />
+        </Component>
     </ComponentGroup>
     
     <ComponentGroup Id="EventSource" Directory="INSTALLLOCATION">

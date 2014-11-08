@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Domain>contoso.com</Domain>
-  <DomainToken>12345</DomainToken>
-  <RecordId>12345</RecordId>
-  <UpdateIntervalInMinutes>15</UpdateIntervalInMinutes>
-</Configuration>
