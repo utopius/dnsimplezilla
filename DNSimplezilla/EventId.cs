@@ -1,4 +1,4 @@
-﻿namespace DNSimple.UpdateService
+﻿namespace DNSimplezilla
 {
     public enum EventId
     {

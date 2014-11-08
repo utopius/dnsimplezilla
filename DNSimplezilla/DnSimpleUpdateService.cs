@@ -1,65 +1,48 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using DNSimple;
 
-namespace DNSimple.UpdateService
+namespace DNSimplezilla
 {
     public class DnSimpleUpdateService
     {
-        private readonly Configuration _configuration;
+        private readonly ConfigurationProvider _configProvider;
+        private readonly IEventLog _eventLog;
         private readonly Timer _timer;
-        private readonly int _intervalMilliSeconds;
-        private readonly DnSimpleRestClient _dnSimple;
-        private readonly JsonIpRestClient _jsonip;
 
-        public DnSimpleUpdateService(Configuration configuration)
+        public DnSimpleUpdateService(ConfigurationProvider configProvider, IEventLog eventLog)
         {
-            _configuration = configuration;
+            if (configProvider == null) throw new ArgumentNullException("configProvider");
+            if (eventLog == null) throw new ArgumentNullException("eventLog");
+            _configProvider = configProvider;
+            _eventLog = eventLog;
 
             _timer = new Timer(OnTimerTick);
-            _intervalMilliSeconds = configuration.UpdateIntervalInMinutes * 1000 * 60;
-            _dnSimple = new DnSimpleRestClient(configuration.Domain, configuration.DomainToken);
-            _jsonip = new JsonIpRestClient();
         }
 
         public void Start()
         {
-            _timer.Change(1, _intervalMilliSeconds);
+            var configuration = _configProvider.Load();
+            _timer.Change(TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(configuration.UpdateInterval));
         }
 
         private void OnTimerTick(object state)
         {
-            Task.Factory.StartNew(UpdateDns)
+            var jsonIpRestClient = new JsonIpRestClient();
+            var configuration = _configProvider.Load();
+            var dnSimpleRestClient = new DNSimpleRestClient(configuration.Username, token: configuration.ApiToken);
+            var recordUpdater = new DomainHostRecordUpdater(jsonIpRestClient, dnSimpleRestClient, configuration.Domains, _eventLog);
+
+            Task.Factory.StartNew(recordUpdater.Update)
                 .ContinueWith(LogError, TaskContinuationOptions.OnlyOnFaulted);
         }
 
-        private static void LogError(Task task)
+        private void LogError(Task task)
         {
+            if (task == null) throw new ArgumentNullException("task");
             var ex = task.Exception != null ? task.Exception.Flatten() : null;
-            EventLog.Error(string.Format("An Exception occurred:\n {0}", ex), ex);
-        }
-
-        private void UpdateDns()
-        {
-            //Fetch the record first to be sure the configuration allows access to the DNSimple api before doing other network stuff.
-            var record = _dnSimple.FetchRecord(_configuration.RecordId);
-            
-            string publicIp = _jsonip.FetchIp();
-            if (string.IsNullOrEmpty(publicIp))
-            {
-                EventLog.Warn(string.Format("Whoops, ip response is strange: {0}", publicIp));
-                return;
-            }
-
-            string recordContent = record.content;
-            if (publicIp == recordContent)
-            {
-                EventLog.Info(string.Format("Record '{0}' still points to IP address '{1}', no need to update.", record, publicIp), EventId.RecordUpdateNotNecessary);
-                return;
-            }
-
-            EventLog.Info(string.Format("Current public IP Address is '{0}' (Obtained from http://jsonip.com)", publicIp));
-            _dnSimple.UpdateRecord(_configuration.RecordId, publicIp);
-            EventLog.Info(string.Format("Successfully updated record '{0}' to point to IP address '{1}'.", record, publicIp), EventId.RecordUpdated);
+            _eventLog.Error(string.Format("An Exception occurred:\n {0}", ex), ex);
         }
 
         public void Stop()

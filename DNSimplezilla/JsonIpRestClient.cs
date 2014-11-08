@@ -3,13 +3,19 @@ using System.Net;
 using Newtonsoft.Json;
 using RestSharp;
 
-namespace DNSimple.UpdateService
+namespace DNSimplezilla
 {
     public class JsonIpRestClient : RestClient
     {
+        public JsonIpRestClient()
+            : base("http://jsonip.com")
+        {
+            
+        }
+
         public string FetchIp()
         {
-            var request = new RestRequest("http://jsonip.com", Method.GET);
+            var request = new RestRequest(BaseUrl, Method.GET);
 
             var response = Execute(request);
 

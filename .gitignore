@@ -4,3 +4,6 @@ DNSimple.UpdateService/obj/
 packages/
 DNSimplezilla.Setup/obj/
 DNSimplezilla/obj/
+*.suo
+*.user
+DNSimplezilla/dnsimplezilla.conf

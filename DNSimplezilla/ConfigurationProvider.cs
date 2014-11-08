@@ -1,122 +1,105 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
+using System.Text;
+using Newtonsoft.Json;
 
-namespace DNSimple.UpdateService
+namespace DNSimplezilla
 {
-    /// <summary>
-    /// Provides access to accounts and the according messageUID-files.
-    /// </summary>
     public class ConfigurationProvider
     {
-        private const string ConfigFilename = "config.xml";
-        private static FileInfo _defaultConfigFile;
-        private static FileInfo _configFile;
-
-        public Configuration Configuration { get; private set; }
-
-        private ConfigurationProvider(Configuration configuration)
+        public static ConfigurationProvider Create(IEventLog eventLog)
         {
-            Configuration = configuration;
+            var configFile = LocateConfigurationFile(eventLog);
+
+            var provider = new ConfigurationProvider(configFile, eventLog);
+            return provider;
         }
 
-        public static ConfigurationProvider Load()
-        {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+        private readonly FileInfo _configFile;
+        private readonly IEventLog _eventLog;
 
-            string programDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), fileVersionInfo.ProductName);
+        private ConfigurationProvider(FileInfo configFile, IEventLog eventLog)
+        {
+            if (configFile == null) throw new ArgumentNullException("configFile");
+            _configFile = configFile;
+            _eventLog = eventLog;
+        }
+
+        private static FileInfo LocateConfigurationFile(IEventLog eventLog)
+        {
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly()
+                                                                         .Location);
+            var programDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), fileVersionInfo.ProductName);
             if (!Directory.Exists(programDataPath))
             {
                 Directory.CreateDirectory(programDataPath);
             }
 
-            var executableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _defaultConfigFile = new FileInfo(Path.Combine(executableDirectory, ConfigFilename));
-            _configFile = new FileInfo(Path.Combine(programDataPath, ConfigFilename));
+            var executableDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly()
+                                                                        .Location);
+            if (executableDirectoryPath == null) throw new InvalidOperationException("ExecutableDirectory is null. WTF?");
 
-            if (!_configFile.Exists)
-            {
-                var message =
-                    string.Format(
-                        "No configuration file found, the default configuration file was created: {0}. You have to add sane values to the file before starting the service.",
-                        _configFile.FullName);
-                EventLog.Warn(message);
-                _defaultConfigFile.CopyTo(_configFile.FullName);
-                throw new ServiceConfigurationException(message);
-            }
-            
-            if (File.ReadAllLines(_defaultConfigFile.FullName)
-                .SequenceEqual(File.ReadAllLines(_configFile.FullName)))
-            {
-                var message =
-                    string.Format(
-                        "The configuration file '{0}' contains default values. You have to add sane values to the file before starting the service.",
-                        _configFile.FullName);
-                EventLog.Warn(message);
-                throw new ServiceConfigurationException(message);
-            }
-            var configuration = LoadConfiguration();
+            var localConfigFile = new FileInfo(Path.Combine(executableDirectoryPath, "dnsimplezilla.conf"));
+            var programDataConfigFile = new FileInfo(Path.Combine(programDataPath, "dnsimplezilla.conf"));
 
-            return new ConfigurationProvider(configuration);
+            if (programDataConfigFile.Exists && !localConfigFile.Exists)
+            {
+                eventLog.Info(string.Format("Configuration file found at {0}.", programDataConfigFile.FullName));
+                return programDataConfigFile;
+            }
+            if (localConfigFile.Exists && !programDataConfigFile.Exists)
+            {
+                eventLog.Info(string.Format("Configuration file found at {0}.", localConfigFile.FullName));
+                return localConfigFile;
+            }
+
+            var message =
+                string.Format("Failed to locate configuration. Place a config file like the provided 'dnsimplezilla.conf' in either {0} or {1}",
+                    localConfigFile.FullName, programDataConfigFile.FullName);
+            eventLog.Warn(message);
+            throw new ServiceConfigurationException(message);
         }
 
-        private static Configuration LoadConfiguration()
+        public Configuration Load()
         {
-            EventLog.Info(string.Format("Loading configuration from {0}...", _configFile.FullName));
-
             try
             {
-                using (var configurationFileStream = _configFile.OpenRead())
+                using (var reader = new StreamReader(_configFile.OpenRead(), Encoding.UTF8))
                 {
-                    var serializer = XmlSerializer.FromTypes(new[] { typeof(Configuration) }).
-                                                   First();
+                    var json = reader.ReadToEnd();
+                    var configuration = JsonConvert.DeserializeObject<Configuration>(json);
 
-                    var configuration = (Configuration)serializer.Deserialize(configurationFileStream);
-
-                    EventLog.Info(string.Format("Configuration loaded from {0}.", _configFile.FullName));
+                    _eventLog.Info(string.Format("Configuration loaded from {0}.", _configFile.FullName));
                     return configuration;
                 }
             }
             catch (Exception e)
             {
-                EventLog.Error("Configuration data corrupted and cannot be restored.", e);
+                _eventLog.Error(string.Format("Configuration file {0} corrupted and cannot be restored.", _configFile.FullName), e);
                 throw;
             }
         }
 
-        public void Save()
+        public void Save(Configuration configuration)
         {
-            Save(Configuration);
-        }
+            if (configuration == null) throw new ArgumentNullException("configuration");
 
-        private static void Save(Configuration configuration)
-        {
-            EventLog.Info(string.Format("Saving Configuration to '{0}'...", _configFile.FullName));
+            _eventLog.Info(string.Format("Saving Configuration to '{0}'...", _configFile.FullName));
             try
             {
-                using (var fileStream = _configFile.OpenWrite())
+                using (var writer = new StreamWriter(_configFile.OpenWrite(), Encoding.UTF8))
                 {
-                    var serializer = new XmlSerializer(typeof(Configuration));
-                    serializer.Serialize(fileStream, configuration);
-                    EventLog.Info(string.Format("Configuration saved to {0}.", _configFile.FullName));
+                    string json = JsonConvert.SerializeObject(configuration);
+                    writer.Write(json);
+                    _eventLog.Info(string.Format("Configuration saved to {0}.", _configFile.FullName));
                 }
             }
             catch (Exception e)
             {
-                EventLog.Error("Error saving Configuration! File may be corrupted!", e);
+                _eventLog.Error("Error saving Configuration! File may be corrupted!", e);
             }
-        }
-    }
-
-    public class ServiceConfigurationException : Exception
-    {
-        public ServiceConfigurationException(string message)
-            : base(message)
-        {
         }
     }
 }
