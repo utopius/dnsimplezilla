@@ -1,0 +1,17 @@
+﻿{
+  'Username': 'your@email.address',
+  'ApiToken': 'YourApiToken',
+  //Interval in minutes
+  'UpdateInterval': '15',
+
+  'Domains': [
+    {
+      'Name': "yourdomain.tld",
+      'HostRecords': [
+          //the root domain host A record has no name
+          '',
+          'SubDomainName'
+      ]
+    }
+  ]
+}

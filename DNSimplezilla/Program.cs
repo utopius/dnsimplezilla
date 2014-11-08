@@ -1,12 +1,13 @@
 ﻿using Topshelf;
 
-namespace DNSimple.UpdateService
+namespace DNSimplezilla
 {
     class Program
     {
         static int Main(string[] args)
         {
             log4net.Config.XmlConfigurator.Configure();
+            var eventLog = new EventLog();
 
             var exitCode = HostFactory.Run(x =>
                 {
@@ -14,27 +15,27 @@ namespace DNSimple.UpdateService
                     {
                         s.ConstructUsing(hostSettings =>
                         {
-                            EventLog.Info("DNSimplezilla preparing for start...");
+                            eventLog.Info("DNSimplezilla preparing for start...");
 
-                            var configProvider = ConfigurationProvider.Load();
-                            return new DnSimpleUpdateService(configProvider.Configuration);
+                            var configProvider = ConfigurationProvider.Create(eventLog);
+                            return new DnSimpleUpdateService(configProvider,eventLog);
                         });
                         s.WhenStarted((service, host) =>
                             {
-                                EventLog.Info("DNSimplezilla starting...");
+                                eventLog.Info("DNSimplezilla starting...");
 
                                 service.Start();
 
-                                EventLog.Info("DNSimplezilla started.");
+                                eventLog.Info("DNSimplezilla started.");
                                 return true;
                             });
                         s.WhenStopped((service, host) =>
                             {
-                                EventLog.Info("DNSimplezilla stopping...");
+                                eventLog.Info("DNSimplezilla stopping...");
 
                                 service.Stop();
 
-                                EventLog.Info("DNSimplezilla stopped.");
+                                eventLog.Info("DNSimplezilla stopped.");
                                 return true;
                             });
                     });
