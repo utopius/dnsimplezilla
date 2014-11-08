@@ -6,7 +6,7 @@
   <?define ServiceName = $(var.DNSimplezilla.TargetName) ?>
   <?define ServiceDisplayName = "$(var.ServiceName) Service" ?>
   <?define ServiceExecutable=$(var.DNSimplezilla.TargetPath)?>
-  <?define ServiceConfigFile="config.xml"?>
+  <?define ServiceConfigFile="dnsimplezilla.conf.example"?>
   <?define ServiceConfigPath="$(var.BuildPath)$(var.ServiceConfigFile)"?>
   
   <?if $(var.Platform) = x64 ?>
