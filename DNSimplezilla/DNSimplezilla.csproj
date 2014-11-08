@@ -102,9 +102,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="dnsimplezilla.conf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="dnsimplezilla.conf" />
     <None Include="dnsimplezilla.conf.example">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
