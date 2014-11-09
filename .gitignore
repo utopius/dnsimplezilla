@@ -4,6 +4,6 @@ packages/
 *.user
 *.msi
 *.dll
-*.exe
 DNSimplezilla/dnsimplezilla.conf
 obj/
+.paket/paket.exe
