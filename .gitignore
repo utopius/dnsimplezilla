@@ -1,9 +1,9 @@
-Build/
-DNSimple.UpdateService.Setup/obj/
-DNSimple.UpdateService/obj/
+build/
 packages/
-DNSimplezilla.Setup/obj/
-DNSimplezilla/obj/
 *.suo
 *.user
+*.msi
+*.dll
+*.exe
 DNSimplezilla/dnsimplezilla.conf
+obj/

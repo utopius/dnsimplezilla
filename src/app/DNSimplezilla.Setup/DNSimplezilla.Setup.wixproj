@@ -15,14 +15,16 @@
     <Name>DNSimplezilla.Setup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <OutputPath>..\Build\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\..\build\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;ApplicationVersion=$(Version)</DefineConstants>
+	<DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>..\Build\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\..\build\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>ApplicationVersion=$(Version)</DefineConstants>
+	<DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
