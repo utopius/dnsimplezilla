@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?define BuildPath="$(var.DNSimplezilla.TargetDir)"?>
-  <?define ProductName = $(var.SolutionName) ?>
+  <?define BuildPath="..\..\..\build\$(var.Configuration)\"?>
+  <?define ProductName = "DNSimplezilla" ?>
   <?define ProductAuthor = "Florian Herbel" ?>
-  <?define ServiceName = $(var.DNSimplezilla.TargetName) ?>
+  <?define ServiceName = "DNSimplezilla" ?>
   <?define ServiceDisplayName = "$(var.ServiceName) Service" ?>
-  <?define ServiceExecutable=$(var.DNSimplezilla.TargetPath)?>
+  <?define ServiceExecutable= "$(var.BuildPath)DNSimplezilla.exe"?>
   <?define ServiceConfigFile="dnsimplezilla.conf.example"?>
   <?define ServiceConfigPath="$(var.BuildPath)$(var.ServiceConfigFile)"?>
   

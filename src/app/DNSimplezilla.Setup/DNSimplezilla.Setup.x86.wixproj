@@ -4,18 +4,20 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <PlatformTarget>x86</PlatformTarget>
-    <ProjectGuid>{2675bccc-f3c4-48d0-85cb-442cd61c2e85}</ProjectGuid>
+    <ProjectGuid>{dd8a52ce-b52f-4ff4-9e9a-261565798756}</ProjectGuid>
     <OutputName>DNSimplezilla.Setup</OutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>..\Build\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;ApplicationVersion=$(Version)</DefineConstants>
+	<DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\Build\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>ApplicationVersion=$(Version)</DefineConstants>
+	<DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <Import Project="DNSimplezilla.Setup.wixproj" />
 </Project>
