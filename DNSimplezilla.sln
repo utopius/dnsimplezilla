@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{3B8BBC1D-B6D0-405E-83FD-7FB9DB15F6ED}"
 	ProjectSection(SolutionItems) = preProject
@@ -46,22 +46,26 @@ Global
 		{1DECEE3C-320F-4837-BB0F-484664575B54}.Release|x86.ActiveCfg = Release|Any CPU
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|Mixed Platforms.Build.0 = Debug|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|x64.ActiveCfg = Debug|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|x64.Build.0 = Debug|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Debug|x86.ActiveCfg = Debug|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|Any CPU.ActiveCfg = Release|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|Mixed Platforms.Build.0 = Release|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|x64.ActiveCfg = Release|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|x64.Build.0 = Release|x64
 		{A41F9337-6D28-41D1-A513-AFCB00463A07}.Release|x86.ActiveCfg = Release|x64
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|x64.ActiveCfg = Debug|x64
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|x64.Build.0 = Debug|x64
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|x86.ActiveCfg = Debug|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Debug|x86.Build.0 = Debug|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|Any CPU.ActiveCfg = Release|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|x64.ActiveCfg = Release|x64
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|x64.Build.0 = Release|x64
 		{DD8A52CE-B52F-4FF4-9E9A-261565798756}.Release|x86.ActiveCfg = Release|x86

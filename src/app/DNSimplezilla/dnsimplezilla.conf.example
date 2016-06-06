@@ -2,7 +2,7 @@
   'Username': 'your@email.address',
   'ApiToken': 'YourApiToken',
   //Interval in minutes
-  'UpdateInterval': '15',
+  'UpdateInterval': '20',
 
   'Domains': [
     {

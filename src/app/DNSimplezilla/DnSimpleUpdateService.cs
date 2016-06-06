@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using DNSimple;
 
 namespace DNSimplezilla
@@ -18,24 +18,49 @@ namespace DNSimplezilla
             _configProvider = configProvider;
             _eventLog = eventLog;
 
-            _timer = new Timer(OnTimerTick);
+            _timer = new Timer();
+            _timer.Elapsed += TimerOnElapsed;
+        }
+
+        private async void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            await UpdateDnsRecordsAsync();
         }
 
         public void Start()
         {
             var configuration = _configProvider.Load();
-            _timer.Change(TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(configuration.UpdateInterval));
+            _timer.Interval = TimeSpan.FromMinutes(configuration.UpdateInterval)
+                                      .TotalMilliseconds;
+
+            UpdateDnsRecordsAsync().Wait();
+            _timer.Start();
         }
 
-        private void OnTimerTick(object state)
+        private async void OnTimerTick(object state)
         {
-            var jsonIpRestClient = new JsonIpRestClient();
-            var configuration = _configProvider.Load();
-            var dnSimpleRestClient = new DNSimpleRestClient(configuration.Username, token: configuration.ApiToken);
-            var recordUpdater = new DomainHostRecordUpdater(jsonIpRestClient, dnSimpleRestClient, configuration.Domains, _eventLog);
+        }
 
-            Task.Factory.StartNew(recordUpdater.Update)
-                .ContinueWith(LogError, TaskContinuationOptions.OnlyOnFaulted);
+        private async Task UpdateDnsRecordsAsync()
+        {
+            try
+            {
+                _timer.Stop();
+                var jsonIpRestClient = new MyExternalIpClient();
+                var configuration = _configProvider.Load();
+                var dnSimpleRestClient = new DNSimpleRestClient(configuration.Username, token: configuration.ApiToken);
+                var recordUpdater = new DomainHostRecordUpdater(jsonIpRestClient, dnSimpleRestClient, configuration.Domains, _eventLog);
+
+                await recordUpdater.UpdateAsync();
+            }
+            catch (Exception e)
+            {
+                _eventLog.Error("Failed to update DNS records", e);
+            }
+            finally
+            {
+                _timer.Start();
+            }
         }
 
         private void LogError(Task task)

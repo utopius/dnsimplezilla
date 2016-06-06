@@ -1,3 +1,4 @@
-DNSimple
 log4net
 Topshelf
+DNSimple
+RestSharp
