@@ -12,7 +12,6 @@ namespace DNSimplezilla
         private readonly IPublicIpProvider _publicIpProvider;
         private readonly IDnSimple _dnSimple;
         private readonly IEventLog _eventLog;
-        private IPAddress _lastKnownPublicIp;
 
         public DomainHostRecordUpdater(IPublicIpProvider publicIpProvider, IDnSimple dnSimple, IEventLog eventLog)
         {
@@ -45,13 +44,6 @@ namespace DNSimplezilla
         private async Task UpdateDomainAsync(Domain domain)
         {
             var publicIp = await _publicIpProvider.GetPublicIpAsync().ConfigureAwait(false);
-            if (Equals(_lastKnownPublicIp, publicIp))
-            {
-                _eventLog.Info(string.Format("No update necessary for domain [{0}], ip has not changed ({1} -> {2})...", domain.Name, _lastKnownPublicIp, publicIp));
-                return;
-            }
-
-            _lastKnownPublicIp = publicIp;
             var domainRecords = await _dnSimple.GetDnsRecordsAsync(domain);
             var configuredRecords = domainRecords.Where(record => domain.HostRecords.Contains(record.Name))
                                                  .ToArray();
