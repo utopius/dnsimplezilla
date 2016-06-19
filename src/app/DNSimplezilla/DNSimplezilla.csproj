@@ -78,6 +78,8 @@
     <Compile Include="DomainRecord.cs" />
     <Compile Include="EventId.cs" />
     <Compile Include="EventLog.cs" />
+    <Compile Include="FetchExternalIpException.cs" />
+    <Compile Include="ICanHazIpClient.cs" />
     <Compile Include="IPublicIpProvider.cs" />
     <Compile Include="MyExternalIpClient.cs" />
     <Compile Include="Program.cs" />

@@ -2,31 +2,24 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace DNSimplezilla
 {
-    public class MyExternalIpClient : IPublicIpProvider
+    public class ICanHazIpClient : IPublicIpProvider
     {
-        // ReSharper disable once ClassNeverInstantiated.Local
-        private class MyExternalIpDto
-        {
-            public string Ip { get; set; }
-        }
-
         public async Task<IPAddress> GetPublicIpAsync()
         {
-            return await GetPublicIpAsync("http://myexternalip.com/json").ConfigureAwait(false);
+            return await GetPublicIpAsync("https://icanhazip.com").ConfigureAwait(false);
         }
 
         public async Task<IPAddress> GetPublicIPv4Async()
         {
-            return await GetPublicIpAsync("http://ipv4.myexternalip.com/json").ConfigureAwait(false);
+            return await GetPublicIpAsync("https://ipv4.icanhazip.com").ConfigureAwait(false);
         }
 
         public async Task<IPAddress> GetPublicIPv6Async()
         {
-            return await GetPublicIpAsync("http://ipv6.myexternalip.com/json").ConfigureAwait(false);
+            return await GetPublicIpAsync("https://ipv6.icanhazip.com").ConfigureAwait(false);
         }
 
         private static async Task<IPAddress> GetPublicIpAsync(string requestUri)
@@ -37,8 +30,7 @@ namespace DNSimplezilla
                 {
                     var response = await client.GetAsync(requestUri).ConfigureAwait(false);
                     var value = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var dto = JsonConvert.DeserializeObject<MyExternalIpDto>(value);
-                    return IPAddress.Parse(dto.Ip);
+                    return IPAddress.Parse(value.Trim());
                 }
                 catch (Exception e)
                 {

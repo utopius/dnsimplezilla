@@ -19,12 +19,19 @@ namespace DNSimplezilla
             _eventLog = eventLog;
 
             _timer = new Timer();
-            _timer.Elapsed += TimerOnElapsed;
+            _timer.Elapsed += OnTimerElapsed;
         }
 
-        private async void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        private async void OnTimerElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            await UpdateDnsRecordsAsync();
+            try
+            {
+                await UpdateDnsRecordsAsync().ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _eventLog.Error("Failed to update DNS records", e);
+            }
         }
 
         public void Start()
@@ -37,25 +44,16 @@ namespace DNSimplezilla
             _timer.Start();
         }
 
-        private async void OnTimerTick(object state)
-        {
-        }
-
         private async Task UpdateDnsRecordsAsync()
         {
             try
             {
                 _timer.Stop();
-                var jsonIpRestClient = new MyExternalIpClient();
                 var configuration = _configProvider.Load();
-                var dnSimpleRestClient = new DNSimpleRestClient(configuration.Username, token: configuration.ApiToken);
-                var recordUpdater = new DomainHostRecordUpdater(jsonIpRestClient, dnSimpleRestClient, configuration.Domains, _eventLog);
+                var recordUpdater = new DomainHostRecordUpdater(new ICanHazIpClient(),
+                    new DnSimple(new DNSimpleRestClient(configuration.Username, token: configuration.ApiToken)), _eventLog);
 
-                await recordUpdater.UpdateAsync();
-            }
-            catch (Exception e)
-            {
-                _eventLog.Error("Failed to update DNS records", e);
+                await recordUpdater.UpdateAsync(configuration.Domains);
             }
             finally
             {
@@ -63,15 +61,9 @@ namespace DNSimplezilla
             }
         }
 
-        private void LogError(Task task)
-        {
-            if (task == null) throw new ArgumentNullException("task");
-            var ex = task.Exception != null ? task.Exception.Flatten() : null;
-            _eventLog.Error(string.Format("An Exception occurred:\n {0}", ex), ex);
-        }
-
         public void Stop()
         {
+            _timer.Elapsed -= OnTimerElapsed;
             _timer.Dispose();
         }
     }
