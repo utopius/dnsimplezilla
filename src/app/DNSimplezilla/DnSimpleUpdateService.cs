@@ -40,7 +40,14 @@ namespace DNSimplezilla
             _timer.Interval = TimeSpan.FromMinutes(configuration.UpdateInterval)
                                       .TotalMilliseconds;
 
-            UpdateDnsRecordsAsync().Wait();
+            try
+            {
+                UpdateDnsRecordsAsync().Wait();
+            }
+            catch (Exception e)
+            {
+                _eventLog.Error("Failed to update DNS records", e);
+            }
             _timer.Start();
         }
 
