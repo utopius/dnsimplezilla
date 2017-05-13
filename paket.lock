@@ -1,6 +1,5 @@
 NUGET
   remote: https://www.nuget.org/api/v2
-  specs:
     DNSimple (0.6)
       Newtonsoft.Json (>= 6.0.6)
       RestSharp (>= 105.0)
@@ -9,4 +8,4 @@ NUGET
     Newtonsoft.Json (6.0.6)
     RestSharp (105.0)
     Topshelf (3.1.3)
-    WiX.Toolset (3.9.1208)
+    WiX (3.10.3)

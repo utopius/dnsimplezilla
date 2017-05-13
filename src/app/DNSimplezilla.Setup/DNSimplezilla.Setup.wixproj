@@ -10,7 +10,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>DNSimplezilla.Setup.$(Platform)</OutputName>
     <OutputType>Package</OutputType>
-	<WixToolPath Condition=" '$(WixToolPath)' == '' ">$(MSBuildProjectDirectory)\..\..\..\packages\WiX.Toolset\tools\wix\</WixToolPath>
+	<WixToolPath Condition=" '$(WixToolPath)' == '' ">$(MSBuildProjectDirectory)\..\..\..\packages\WiX\tools\</WixToolPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(WixToolPath)Wix.targets</WixTargetsPath>
     <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(WixToolPath)WixTasks.dll</WixTasksPath>	
     <Name>DNSimplezilla.Setup</Name>
