@@ -29,8 +29,13 @@ namespace DNSimplezilla
                 try
                 {
                     var response = await client.GetAsync(requestUri).ConfigureAwait(false);
-                    var value = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    var value = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     return IPAddress.Parse(value.Trim());
+                }
+                catch (HttpRequestException e)
+                {
+                    throw new FetchExternalIpException(string.Format("Failed to get the public ip from '{0}': {1}, HTTP request failed", requestUri, e.Message), e);
                 }
                 catch (Exception e)
                 {

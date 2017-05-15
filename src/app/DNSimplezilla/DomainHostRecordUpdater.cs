@@ -31,7 +31,7 @@ namespace DNSimplezilla
                 _eventLog.Info(string.Format("Checking domain [{0}]...", domain.Name));
                 try
                 {
-                    await UpdateDomainAsync(domain);
+                    await UpdateDomainAsync(domain).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {

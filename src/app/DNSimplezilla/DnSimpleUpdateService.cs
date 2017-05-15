@@ -42,7 +42,7 @@ namespace DNSimplezilla
 
             try
             {
-                UpdateDnsRecordsAsync().Wait();
+                UpdateDnsRecordsAsync().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
